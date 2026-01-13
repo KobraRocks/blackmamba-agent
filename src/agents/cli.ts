@@ -327,4 +327,44 @@ program
     });
   });
 
+program
+  .command('init')
+  .description('Initialize a new BlackMamba project')
+  .option('--skip-git', 'Skip Git repository initialization')
+  .option('--skip-install', 'Skip npm dependency installation')
+  .option('--verbose', 'Show detailed output')
+  .option('--name <name>', 'Project name (default: my-blackmamba-app)')
+  .option('--description <description>', 'Project description')
+  .action(async (options) => {
+    console.log('🚀 Initializing new BlackMamba project...\n');
+    
+    try {
+      const { ProjectInitializer } = await import('./services/project-initializer');
+      
+      const initializer = new ProjectInitializer(process.cwd(), {
+        skipGit: options.skipGit,
+        skipInstall: options.skipInstall,
+        verbose: options.verbose,
+        projectName: options.name,
+        projectDescription: options.description
+      });
+      
+      const result = await initializer.initialize();
+      
+      console.log('\n' + result.message);
+      
+      if (!result.success) {
+        console.error('\n❌ Initialization failed:');
+        result.errors.forEach(error => console.error(`  • ${error}`));
+        process.exit(1);
+      }
+      
+    } catch (error) {
+      console.error('\n❌ Failed to initialize project:');
+      console.error(`  ${error instanceof Error ? error.message : String(error)}`);
+      console.error('\n💡 Make sure you are in an empty directory and have write permissions.');
+      process.exit(1);
+    }
+  });
+
 program.parse(process.argv);

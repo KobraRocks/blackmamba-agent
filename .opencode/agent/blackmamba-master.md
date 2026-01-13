@@ -1,7 +1,6 @@
 ---
 description: Master agent for BlackMamba framework development workflow orchestration
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
+mode: primary
 temperature: 0.3
 tools:
   write: true

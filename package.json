@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-templates",
     "start": "node dist/server.js",
     "agent": "ts-node src/agents/cli.ts",
     "agent:analyze": "ts-node src/agents/cli.ts analyze",
@@ -16,9 +16,11 @@
     "agent:git-status": "ts-node src/agents/cli.ts git-status",
     "agent:create-branch": "ts-node src/agents/cli.ts create-branch",
     "agent:validate-merge": "ts-node src/agents/cli.ts validate-merge",
+    "agent:init": "ts-node src/agents/cli.ts init",
     "test": "jest",
     "lint": "eslint src --ext .ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "copy-templates": "cp -r src/agents/templates dist/agents/"
   },
   "keywords": [
     "nodejs",

@@ -22,6 +22,7 @@ BlackMamba is a modern web application framework that combines the simplicity of
 
 ## 📦 Installation
 
+### Development Installation
 ```bash
 # Clone the repository
 git clone https://github.com/your-org/blackmamba.git
@@ -30,29 +31,105 @@ cd blackmamba
 # Install dependencies
 npm install
 
+# Build the project
+npm run build
+
 # Start development server
 npm run dev
 ```
 
+### Global CLI Installation (Arch Linux)
+Make the `blackmamba-agent` CLI available globally:
+
+```bash
+# From the project directory
+cd blackmamba
+
+# Install globally using npm link
+sudo npm link
+
+# Verify installation
+blackmamba-agent --help
+
+# Or install globally without linking
+sudo npm install -g .
+
+# Alternative: Create a symlink manually
+sudo ln -s $(pwd)/dist/agents/cli.js /usr/local/bin/blackmamba-agent
+```
+
+### Global CLI Installation (Other Systems)
+```bash
+# Install globally
+npm install -g .
+
+# Or from a published package (when available)
+# npm install -g blackmamba-agent
+```
+
 ## 🎯 Quick Start
 
-### 1. Analyze Your Project
+### Using Global CLI (Recommended)
+If you've installed BlackMamba globally:
+
 ```bash
+# Create and initialize a new project
+mkdir my-app
+cd my-app
+blackmamba-agent init --name "my-app" --description "My BlackMamba Application"
+
+# With custom options
+blackmamba-agent init --skip-install --skip-git --verbose
+```
+
+### Using NPM Scripts (Development)
+If you're working from the BlackMamba source directory:
+
+```bash
+# Create a new directory for your project
+mkdir my-app
+cd my-app
+
+# Initialize BlackMamba project
+npm run agent:init -- --name "my-app" --description "My BlackMamba Application"
+
+# Or with custom options
+npm run agent:init -- --skip-install --skip-git --verbose
+```
+
+### 2. Analyze Your Project
+```bash
+# Using Global CLI
+blackmamba-agent analyze
+
+# Using NPM Scripts (from source)
 npm run agent:analyze
 ```
 
-### 2. Create a New Feature
+### 3. Create a New Feature
 ```bash
+# Using Global CLI
+blackmamba-agent new-feature users
+
+# Using NPM Scripts (from source)
 npm run agent:new-feature users
 ```
 
-### 3. Fix Framework Violations
+### 4. Fix Framework Violations
 ```bash
+# Using Global CLI
+blackmamba-agent fix-violations
+
+# Using NPM Scripts (from source)
 npm run agent:fix-violations
 ```
 
-### 4. View Agent Patterns
+### 5. View Agent Patterns
 ```bash
+# Using Global CLI
+blackmamba-agent patterns
+
+# Using NPM Scripts (from source)
 npm run agent:patterns
 ```
 
@@ -110,12 +187,49 @@ blackmamba/
 
 ## 📖 Usage Examples
 
+### Project Initialization
+**Using Global CLI:**
+```bash
+# Initialize a new BlackMamba project
+blackmamba-agent init --name "my-app" --description "My Application"
+
+# Initialize with custom options
+blackmamba-agent init \
+  --name "my-app" \
+  --description "My BlackMamba Application" \
+  --skip-git \
+  --skip-install \
+  --verbose
+```
+
+**Using NPM Scripts (from source):**
+```bash
+npm run agent:init -- --name "my-app" --description "My Application"
+
+npm run agent:init -- \
+  --name "my-app" \
+  --description "My BlackMamba Application" \
+  --skip-git \
+  --skip-install \
+  --verbose
+```
+
+**Options:**
+- `--skip-git` - Skip Git repository initialization
+- `--skip-install` - Skip npm dependency installation  
+- `--verbose` - Show detailed output
+- `--name <name>` - Project name (default: my-blackmamba-app)
+- `--description <desc>` - Project description
+
 ### Creating a New Feature
 ```typescript
 // Invoke via Opencode
 @blackmamba-master create new feature "todos" with CRUD operations
 
-// Or use CLI
+// Or use CLI (Global)
+blackmamba-agent new-feature todos --description "Todo management system"
+
+// Or use NPM Scripts (from source)
 npm run agent:new-feature todos -- --description "Todo management system"
 ```
 
@@ -124,7 +238,10 @@ npm run agent:new-feature todos -- --description "Todo management system"
 // Get comprehensive project analysis
 @blackmamba-master analyze project structure
 
-// Or use CLI
+// Or use CLI (Global)
+blackmamba-agent analyze
+
+// Or use NPM Scripts (from source)
 npm run agent:analyze
 ```
 
@@ -133,7 +250,10 @@ npm run agent:analyze
 // Check for framework violations
 @blackmamba-master check framework compliance
 
-// Fix violations
+// Fix violations (Global CLI)
+blackmamba-agent fix-violations
+
+// Or use NPM Scripts (from source)
 npm run agent:fix-violations
 ```
 
@@ -155,17 +275,51 @@ tools:
 ---
 ```
 
-### Package Scripts
+### Package Scripts (Source Development)
+When working from the BlackMamba source directory:
+
 ```json
 {
   "scripts": {
     "dev": "ts-node src/server.ts",
+    "build": "tsc && npm run copy-templates",
+    "start": "node dist/server.js",
     "agent": "ts-node src/agents/cli.ts",
     "agent:analyze": "ts-node src/agents/cli.ts analyze",
     "agent:new-feature": "ts-node src/agents/cli.ts new-feature",
-    "agent:fix-violations": "ts-node src/agents/cli.ts fix-violations"
+    "agent:fix-violations": "ts-node src/agents/cli.ts fix-violations",
+    "agent:workflows": "ts-node src/agents/cli.ts workflows",
+    "agent:patterns": "ts-node src/agents/cli.ts patterns",
+    "agent:git-status": "ts-node src/agents/cli.ts git-status",
+    "agent:create-branch": "ts-node src/agents/cli.ts create-branch",
+    "agent:validate-merge": "ts-node src/agents/cli.ts validate-merge",
+    "agent:init": "ts-node src/agents/cli.ts init",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
   }
 }
+```
+
+### Global CLI Commands
+When installed globally, use `blackmamba-agent`:
+
+```bash
+# Project Management
+blackmamba-agent init [options]           # Initialize new project
+blackmamba-agent analyze                  # Analyze project structure
+blackmamba-agent new-feature <name>       # Create new feature
+blackmamba-agent fix-violations           # Fix framework violations
+blackmamba-agent patterns                 # Show framework patterns
+
+# Git Workflow
+blackmamba-agent git-status               # Check git workflow status
+blackmamba-agent create-branch <type> <name>  # Create development branch
+blackmamba-agent validate-merge           # Validate branch for merge
+
+# Development
+blackmamba-agent workflows                # List executed workflows
+blackmamba-agent --help                   # Show all commands
 ```
 
 ## 🧪 Testing
