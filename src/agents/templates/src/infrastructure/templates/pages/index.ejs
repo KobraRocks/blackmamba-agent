@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - BlackMamba</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+</head>
+<body>
+    <%- partial('layouts/header') %>
+    
+    <main class="container">
+        <div class="hero">
+            <h1>Welcome to <%= title %></h1>
+            <p class="lead">Your BlackMamba HTMX application is running!</p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🚀 Ready to Code</h3>
+                    <p>Your project structure is set up with all BlackMamba patterns.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🤖 Agent System</h3>
+                    <p>AI agents are configured in <code>.opencode/agent/</code> directory.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚡ HTMX Powered</h3>
+                    <p>HTMX and hyperscript are included for modern web interactions.</p>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-primary" hx-get="/health" hx-target="#status">
+                    Check Health Status
+                </button>
+                <div id="status" class="mt-3"></div>
+            </div>
+        </div>
+        
+        <div class="next-steps mt-5">
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Review the generated project structure</li>
+                <li>Set up your database: <code>npm run prisma:migrate</code></li>
+                <li>Create your first feature: <code>blackmamba-agent new-feature todos</code></li>
+                <li>Start building your application!</li>
+            </ol>
+        </div>
+    </main>
+    
+    <%- partial('layouts/footer') %>
+</body>
+</html>
