@@ -1,0 +1,64 @@
+{
+  "name": "blackmamba",
+  "version": "1.0.0",
+  "description": "Node.js HTMX Web App Framework with Agent System",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "agent": "ts-node src/agents/cli.ts",
+    "agent:analyze": "ts-node src/agents/cli.ts analyze",
+    "agent:new-feature": "ts-node src/agents/cli.ts new-feature",
+    "agent:fix-violations": "ts-node src/agents/cli.ts fix-violations",
+    "agent:workflows": "ts-node src/agents/cli.ts workflows",
+    "agent:patterns": "ts-node src/agents/cli.ts patterns",
+    "agent:git-status": "ts-node src/agents/cli.ts git-status",
+    "agent:create-branch": "ts-node src/agents/cli.ts create-branch",
+    "agent:validate-merge": "ts-node src/agents/cli.ts validate-merge",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "nodejs",
+    "htmx",
+    "framework",
+    "typescript",
+    "agents"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "express": "^4.18.2",
+    "ejs": "^3.1.9",
+    "prisma": "^5.0.0",
+    "@prisma/client": "^5.0.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/express": "^4.17.17",
+    "@types/ejs": "^3.1.2",
+    "@types/passport": "^1.0.12",
+    "@types/passport-local": "^1.0.35",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "blackmamba-agent": "./dist/agents/cli.js"
+  }
+}
