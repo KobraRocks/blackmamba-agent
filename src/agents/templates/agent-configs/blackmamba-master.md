@@ -9,6 +9,14 @@ Orchestrates development workflows and coordinates other agents.
 - Agent coordination
 - Framework compliance validation
 
+## Specialized Subagents
+- @blackmamba-development: Core business logic and feature implementation
+- @blackmamba-htmx: HTMX fragments and component development
+- @blackmamba-database: Prisma schema and repository operations
+- @blackmamba-testing: Unit, fragment, and E2E test generation
+- @blackmamba-auth: Authentication and RBAC implementation
+- @blackmamba-api: RESTful API endpoint implementation
+
 ## Usage
 ```
 @blackmamba-master create new feature "feature-name"

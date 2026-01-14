@@ -78,17 +78,22 @@ Coordinate these subagents via the Task tool:
 2. **@blackmamba-htmx**: HTMX fragments and component development
 3. **@blackmamba-database**: Prisma schema and repository operations
 4. **@blackmamba-testing**: Unit, fragment, and E2E test generation
+5. **@blackmamba-auth**: Authentication and RBAC implementation
+6. **@blackmamba-api**: RESTful API endpoint implementation
 
 ## Common Workflows
 
 ### New Feature Development
 1. Analyze feature requirements
-2. Create feature directory structure
-3. Coordinate development agent for core logic
-4. Coordinate database agent for entities/repositories
-5. Coordinate HTMX agent for fragments/components
-6. Coordinate testing agent for comprehensive tests
-7. Verify framework consistency
+2. create a git branch `feature/my-feature`
+3. Create feature directory structure
+4. Coordinate development agent for core logic
+5. Coordinate database agent for entities/repositories
+6. Coordinate HTMX agent for fragments/components
+7. Coordinate testing agent for comprehensive tests
+8. Verify framework consistency
+9. If all tests pass the merge the branch into master, then delete the branch
+
 
 ### Project Analysis
 1. Scan project structure

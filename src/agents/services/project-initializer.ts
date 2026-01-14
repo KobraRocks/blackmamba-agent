@@ -286,7 +286,9 @@ export class ProjectInitializer {
       'blackmamba-development.md',
       'blackmamba-htmx.md',
       'blackmamba-database.md',
-      'blackmamba-testing.md'
+      'blackmamba-testing.md',
+      'blackmamba-auth.md',
+      'blackmamba-api.md'
     ];
     
     const missingAgentConfigs = requiredAgentConfigs.filter(config =>
@@ -313,6 +315,14 @@ Orchestrates development workflows and coordinates other agents.
 - Workflow creation and execution
 - Agent coordination
 - Framework compliance validation
+
+## Specialized Subagents
+- @blackmamba-development: Core business logic and feature implementation
+- @blackmamba-htmx: HTMX fragments and component development
+- @blackmamba-database: Prisma schema and repository operations
+- @blackmamba-testing: Unit, fragment, and E2E test generation
+- @blackmamba-auth: Authentication and RBAC implementation
+- @blackmamba-api: RESTful API endpoint implementation
 
 ## Usage
 \`\`\`
@@ -394,6 +404,40 @@ Creates comprehensive tests for all application layers.
 - Fragment tests with HTML parsing
 - API integration tests
 - Playwright E2E tests
+\`\`\``,
+      'blackmamba-auth.md': `# BlackMamba Auth Agent
+
+## Purpose
+Implements authentication, authorization, and security systems.
+
+## Capabilities
+- Authentication implementation (Passport strategies)
+- Role-based access control (RBAC)
+- Security middleware and protection
+- Session management
+
+## Patterns
+- Passport strategies in infrastructure/auth/passport/
+- RBAC with roles and permissions
+- Secure password handling
+- CSRF protection and rate limiting
+\`\`\``,
+      'blackmamba-api.md': `# BlackMamba API Agent
+
+## Purpose
+Implements RESTful API endpoints and documentation.
+
+## Capabilities
+- API endpoint implementation
+- API versioning and migration
+- OpenAPI/Swagger documentation
+- Consistent response formats
+
+## Patterns
+- API endpoints in src/features/{feature}/api/
+- Versioned API structure (v1/, v2/)
+- Standardized error responses
+- Request validation and sanitization
 \`\`\``
     };
     
