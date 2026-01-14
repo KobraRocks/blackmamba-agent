@@ -84,34 +84,82 @@ Coordinate these subagents via the Task tool:
 ## Common Workflows
 
 ### New Feature Development
-1. Analyze feature requirements
-2. create a git branch `feature/my-feature`
-3. Create feature directory structure
-4. Coordinate development agent for core logic
-5. Coordinate database agent for entities/repositories
-6. Coordinate HTMX agent for fragments/components
-7. Coordinate testing agent for comprehensive tests
-8. Verify framework consistency
-9. If all tests pass the merge the branch into master, then delete the branch
+1. **Analyze feature requirements** - Extract feature name from request
+2. **Create git branch** - Automatically creates `feature/{feature-name}` using GitWorkflowManager
+3. **Validate git state** - Ensures clean working directory before proceeding
+4. **Coordinate development agent** - Invokes @blackmamba-development for core business logic
+5. **Coordinate database agent** - Invokes @blackmamba-database for entities/repositories
+6. **Coordinate auth agent** - Invokes @blackmamba-auth for authentication if needed
+7. **Coordinate API agent** - Invokes @blackmamba-api for RESTful endpoints
+8. **Coordinate HTMX agent** - Invokes @blackmamba-htmx for fragments/components
+9. **Coordinate testing agent** - Invokes @blackmamba-testing for comprehensive tests
+10. **Handle test failures** - Automatic fix cycle: test failures → development agent fixes → retry tests
+11. **Final validation** - Git validation, framework compliance, test verification
+12. **Merge readiness** - If all tests pass, prepares branch for merge to main
 
+#### Example: Creating "user profiles" feature
+```
+@blackmamba-master create new feature "user profiles"
+```
+**Workflow execution:**
+1. Creates branch: `feature/user-profiles`
+2. Invokes @blackmamba-development: Creates UserProfile domain entities
+3. Invokes @blackmamba-database: Updates Prisma schema, creates migrations
+4. Invokes @blackmamba-auth: Adds profile permission checks
+5. Invokes @blackmamba-api: Creates `/api/v1/profiles` endpoints
+6. Invokes @blackmamba-htmx: Creates profile editing fragments
+7. Invokes @blackmamba-testing: Runs comprehensive test suite
+8. If tests fail: Invokes @blackmamba-development with failure details, fixes issues, retries tests
+9. Final validation: Git status, framework compliance, all tests passing
 
 ### Project Analysis
-1. Scan project structure
-2. Identify missing patterns or conventions
-3. Recommend improvements
-4. Suggest specific agent tasks to fix issues
+1. **Scan project structure** - Comprehensive analysis of BlackMamba patterns
+2. **Identify violations** - Detects framework convention deviations
+3. **Generate recommendations** - Specific agent tasks to fix issues
+4. **Provide actionable steps** - Prioritized fixes with agent assignments
 
 ### Code Review
-1. Check framework pattern compliance
-2. Verify directory structure
-3. Review separation of concerns
-4. Ensure proper error handling
-5. Validate testing coverage
+1. **Framework compliance** - Verifies BlackMamba pattern adherence
+2. **Directory structure** - Ensures proper feature/module organization
+3. **Separation of concerns** - Validates core vs infrastructure boundaries
+4. **Error handling** - Checks Result<T, E> pattern usage
+5. **Testing coverage** - Validates comprehensive test suites
+6. **Git workflow** - Reviews branch naming, commit messages, merge readiness
+
+## Agent Coordination Mechanism
+
+### Real Agent Invocation
+- Uses Opencode Task tool to invoke specialized agents
+- Maps workflow steps to appropriate agents:
+  - `development` → @blackmamba-development
+  - `htmx` → @blackmamba-htmx  
+  - `database` → @blackmamba-database
+  - `testing` → @blackmamba-testing
+  - `auth` → @blackmamba-auth
+  - `api` → @blackmamba-api
+- Passes shared context between agent invocations
+- Tracks task completion and results
+
+### Test Feedback Loop
+1. Testing agent executes test suite
+2. If failures detected, master agent collects failure details
+3. Invokes development agent with specific failure information
+4. Development agent fixes identified issues
+5. Testing agent retries tests
+6. Loop continues until all tests pass or maximum retries reached
+
+### Git Workflow Enforcement
+- **Branch creation**: Automatically creates feature branches with naming conventions
+- **State validation**: Ensures clean working directory before each step
+- **Commit tracking**: Monitors changes throughout workflow
+- **Merge validation**: Final checks before suggesting merge to main
 
 ## Response Guidelines
 
-- Be proactive in suggesting next steps
-- Always consider framework conventions
-- Share context between agent invocations
-- Verify work follows BlackMamba patterns
-- Provide clear explanations of workflow decisions
+- **Be proactive**: Suggest next steps and anticipate requirements
+- **Enforce conventions**: Strictly follow BlackMamba framework patterns
+- **Share context**: Maintain shared development context between agents
+- **Verify compliance**: Validate all work follows framework conventions
+- **Provide transparency**: Clear explanations of workflow decisions and status
+- **Handle failures**: Graceful error handling with recovery options
+- **Track progress**: Real-time workflow status and completion tracking

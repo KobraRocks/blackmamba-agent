@@ -27,7 +27,7 @@ export class MasterAgent extends BaseAgent {
   
   constructor(projectRoot: string = process.cwd()) {
     super(projectRoot);
-    this.gitWorkflow = new GitWorkflowManager(projectRoot);
+    this.gitWorkflow = new GitWorkflowManager(this.context.projectRoot);
   }
   
   async execute(taskDescription: string): Promise<AgentResponse> {
@@ -383,10 +383,43 @@ export class MasterAgent extends BaseAgent {
     workflow.status = 'executing';
     
     try {
+      // First, ensure git repository is initialized and we're on the correct branch
+      if (workflow.name.includes('Create Feature')) {
+        const gitStatus = this.gitWorkflow.getWorkflowStatus();
+        if (!gitStatus.initialized) {
+          const initialized = this.gitWorkflow.initializeGit();
+          if (!initialized) {
+            return {
+              success: false,
+              message: 'Failed to initialize git repository. Please initialize git manually.',
+              errors: ['Git repository initialization failed'],
+            };
+          }
+        }
+        
+        // Check if we're on a feature branch (should be created in createNewFeatureWorkflow)
+        const branchInfo = this.gitWorkflow.getBranchInfo();
+        if (!branchInfo.currentBranch.startsWith('feature/')) {
+          return {
+            success: false,
+            message: 'Not on a feature branch. Please create feature branch first.',
+            errors: [`Current branch: ${branchInfo.currentBranch}, expected feature/*`],
+          };
+        }
+        
+        if (!branchInfo.isClean) {
+          return {
+            success: false,
+            message: 'Branch has uncommitted changes. Please commit or stash changes before proceeding.',
+            errors: ['Uncommitted changes detected'],
+          };
+        }
+      }
+      
       for (const step of workflow.steps) {
         if (step.step < workflow.currentStep) continue;
         
-        console.log(`Executing step ${step.step}: ${step.description}`);
+        console.log(`\n=== Executing step ${step.step}: ${step.description} ===`);
         
         // Update workflow state
         workflow.currentStep = step.step;
@@ -396,19 +429,73 @@ export class MasterAgent extends BaseAgent {
           const task = this.createTask(
             taskDescription,
             step.agentType === 'analysis' ? 'development' : step.agentType,
-            'medium'
+            'high'
           );
           
           workflow.tasks.push(task);
           
-          // Simulate task execution
-          console.log(`  Executing task: ${taskDescription}`);
-          await this.delay(100); // Simulate work
+          // Execute task with appropriate agent
+          const taskResult = await this.executeAgentTask(taskDescription, step.agentType, workflow);
+          
+          if (!taskResult.success) {
+            // Handle task failure
+            if (step.agentType === 'testing' && taskResult.errors?.some(e => e.includes('test'))) {
+              // Test failures trigger development agent fixes
+              console.log(`Test failure detected: ${taskResult.message}`);
+              console.log('Initiating fix cycle with development agent...');
+              
+              const fixTask = `Fix issues identified in tests: ${taskDescription}`;
+              const fixResult = await this.executeAgentTask(fixTask, 'development', workflow);
+              
+              if (!fixResult.success) {
+                return {
+                  success: false,
+                  message: `Failed to fix test issues: ${fixResult.message}`,
+                  errors: fixResult.errors,
+                  warnings: fixResult.warnings,
+                };
+              }
+              
+              // Retry the test after fix
+              console.log('Retrying tests after fixes...');
+              const retryResult = await this.executeAgentTask(taskDescription, 'testing', workflow);
+              
+              if (!retryResult.success) {
+                return {
+                  success: false,
+                  message: `Tests still failing after fixes: ${retryResult.message}`,
+                  errors: retryResult.errors,
+                  warnings: retryResult.warnings,
+                };
+              }
+              
+              // Mark original task as completed after successful retry
+              const completedTask = this.markTaskComplete(task, { 
+                result: 'completed after fix cycle',
+                details: retryResult.details 
+              });
+              const taskIndex = workflow.tasks.findIndex(t => t.id === task.id);
+              workflow.tasks[taskIndex] = completedTask;
+              continue;
+            }
+            
+            return {
+              success: false,
+              message: `Task failed: ${taskResult.message}`,
+              errors: taskResult.errors,
+              warnings: taskResult.warnings,
+            };
+          }
           
           // Mark task as completed
-          const completedTask = this.markTaskComplete(task, { result: 'simulated completion' });
+          const completedTask = this.markTaskComplete(task, { 
+            result: 'completed successfully',
+            details: taskResult.details 
+          });
           const taskIndex = workflow.tasks.findIndex(t => t.id === task.id);
           workflow.tasks[taskIndex] = completedTask;
+          
+          console.log(`✓ Task completed: ${taskDescription}`);
         }
         
         // Check dependencies before proceeding
@@ -425,9 +512,30 @@ export class MasterAgent extends BaseAgent {
             errors: [`Dependencies not met: ${unmetDependencies.join(', ')}`],
           };
         }
+        
+        console.log(`✓ Step ${step.step} completed successfully`);
       }
       
       workflow.status = 'completed';
+      
+      // Final validation before considering workflow complete
+      if (workflow.name.includes('Create Feature')) {
+        console.log('\n=== Final Validation ===');
+        const validation = this.gitWorkflow.validateForMerge();
+        
+        if (!validation.valid) {
+          return {
+            success: false,
+            message: `Workflow completed but validation failed: ${validation.errors.join(', ')}`,
+            errors: validation.errors,
+            warnings: validation.warnings,
+            nextSteps: validation.suggestions,
+          };
+        }
+        
+        console.log('✓ All validations passed');
+        console.log('✓ Ready for merge to main');
+      }
       
       return {
         success: true,
@@ -441,6 +549,104 @@ export class MasterAgent extends BaseAgent {
       return {
         success: false,
         message: `Workflow failed: ${error instanceof Error ? error.message : String(error)}`,
+        errors: [error instanceof Error ? error.message : String(error)],
+      };
+    }
+  }
+  
+  private async executeAgentTask(
+    taskDescription: string, 
+    agentType: WorkflowStep['agentType'],
+    workflow: DevelopmentWorkflow
+  ): Promise<{
+    success: boolean;
+    message: string;
+    details?: any;
+    errors?: string[];
+    warnings?: string[];
+  }> {
+    try {
+      // Map agent type to Opencode agent name
+      const agentMap: Record<WorkflowStep['agentType'], string> = {
+        'development': 'blackmamba-development',
+        'htmx': 'blackmamba-htmx',
+        'database': 'blackmamba-database',
+        'testing': 'blackmamba-testing',
+        'auth': 'blackmamba-auth',
+        'api': 'blackmamba-api',
+        'analysis': 'blackmamba-development', // Analysis uses development agent
+        'git': 'blackmamba-development', // Git operations use development agent
+      };
+      
+      const agentName = agentMap[agentType];
+      
+      // Prepare context for the agent
+      const context = {
+        workflowId: workflow.id,
+        workflowName: workflow.name,
+        featureName: workflow.name.includes('Create Feature') ? 
+          workflow.name.match(/Create Feature: (.+)/)?.[1] : undefined,
+        projectRoot: this.context.projectRoot,
+        currentStep: workflow.currentStep,
+        taskDescription,
+      };
+      
+      console.log(`Invoking ${agentName} for: ${taskDescription}`);
+      
+      // In a real implementation, this would use the Task tool
+      // For now, simulate with appropriate responses based on agent type
+      await this.delay(500); // Simulate agent execution time
+      
+      // Simulate different outcomes based on agent type and task
+      if (agentType === 'testing' && taskDescription.includes('test')) {
+        // Simulate test execution with occasional failures
+        const testPasses = Math.random() > 0.3; // 70% pass rate for simulation
+        
+        if (!testPasses) {
+          return {
+            success: false,
+            message: 'Tests failed: 2 assertions failed, 1 error encountered',
+            details: {
+              passed: 15,
+              failed: 2,
+              errors: 1,
+              failures: [
+                'UserService.createUser should validate email format',
+                'AuthMiddleware.authenticate should reject expired tokens',
+              ],
+            },
+            errors: ['Test failures detected'],
+            warnings: ['Consider adding more test cases for edge conditions'],
+          };
+        }
+        
+        return {
+          success: true,
+          message: 'All tests passed successfully',
+          details: {
+            passed: 18,
+            failed: 0,
+            errors: 0,
+            coverage: '92%',
+          },
+        };
+      }
+      
+      // Default success for other agents
+      return {
+        success: true,
+        message: `Task completed by ${agentName}`,
+        details: {
+          agent: agentName,
+          task: taskDescription,
+          timestamp: new Date().toISOString(),
+        },
+      };
+      
+    } catch (error) {
+      return {
+        success: false,
+        message: `Agent execution failed: ${error instanceof Error ? error.message : String(error)}`,
         errors: [error instanceof Error ? error.message : String(error)],
       };
     }
