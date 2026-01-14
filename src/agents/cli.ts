@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { MasterAgent } from './master/master-agent';
 import { BlackMambaProjectAnalyzer } from './shared/project-analyzer';
 import { GitWorkflowManager } from './shared/git-workflow';
+import { AgentUpdater } from './services/agent-updater';
 
 const program = new Command();
 
@@ -362,7 +363,99 @@ program
     } catch (error) {
       console.error('\n❌ Failed to initialize project:');
       console.error(`  ${error instanceof Error ? error.message : String(error)}`);
-      console.error('\n💡 Make sure you are in an empty directory and have write permissions.');
+       console.error('\n💡 Make sure you are in an empty directory and have write permissions.');
+      process.exit(1);
+    }
+  });
+
+program
+  .command('update')
+  .description('Update agent files and workflows to latest version')
+  .option('--dry-run', 'Show what would be updated without making changes')
+  .option('--no-backup', 'Skip creating backups of existing files')
+  .option('--force', 'Force update even if target directory doesn\'t exist')
+  .option('--verbose', 'Show detailed output')
+  .option('--check', 'Only check if updates are available')
+  .action(async (options) => {
+    console.log('🔄 Updating BlackMamba agent files...\n');
+    
+    try {
+      const updater = new AgentUpdater(process.cwd(), undefined, {
+        backup: options.backup,
+        dryRun: options.dryRun,
+        verbose: options.verbose,
+        force: options.force,
+      });
+      
+      if (options.check) {
+        console.log('🔍 Checking for available updates...\n');
+        const updateCheck = await updater.checkForUpdates();
+        
+        if (updateCheck.needsUpdate) {
+          console.log('📦 Updates available:');
+          console.log(`   Outdated files: ${updateCheck.outdatedFiles.length}/${updateCheck.totalFiles}`);
+          updateCheck.outdatedFiles.forEach(file => {
+            console.log(`   • ${file}`);
+          });
+          console.log('\n💡 Run `blackmamba-agent update` to apply these updates.');
+        } else {
+          console.log('✅ All agent files are up to date.');
+        }
+        return;
+      }
+      
+      const result = await updater.update();
+      
+      console.log('\n' + result.message);
+      
+      if (result.updatedFiles.length > 0 && options.verbose) {
+        console.log('\n📋 Updated files:');
+        result.updatedFiles.forEach(file => {
+          console.log(`   • ${file}`);
+        });
+      }
+      
+      if (result.backedUpFiles.length > 0 && options.verbose) {
+        console.log('\n💾 Backed up files:');
+        result.backedUpFiles.forEach(file => {
+          console.log(`   • ${file}`);
+        });
+      }
+      
+      if (result.skippedFiles.length > 0 && options.verbose) {
+        console.log('\n⏭️  Skipped files (already up to date):');
+        result.skippedFiles.forEach(file => {
+          console.log(`   • ${file}`);
+        });
+      }
+      
+      if (result.errors.length > 0) {
+        console.error('\n❌ Errors:');
+        result.errors.forEach(error => {
+          console.error(`   • ${error}`);
+        });
+        
+        if (!result.success) {
+          process.exit(1);
+        }
+      }
+      
+      if (result.warnings.length > 0) {
+        console.log('\n⚠️  Warnings:');
+        result.warnings.forEach(warning => {
+          console.log(`   • ${warning}`);
+        });
+      }
+      
+      if (result.success && !options.dryRun) {
+        console.log('\n🎉 Agent files updated successfully!');
+        console.log('💡 Restart any active Opencode sessions to use the updated agents.');
+      }
+      
+    } catch (error) {
+      console.error('\n❌ Update failed:');
+      console.error(`   ${error instanceof Error ? error.message : String(error)}`);
+      console.error('\n💡 Make sure you have write permissions to the .opencode/agent directory.');
       process.exit(1);
     }
   });

@@ -109,7 +109,7 @@ Coordinate these subagents via the Task tool:
 5. Invokes @blackmamba-api: Creates `/api/v1/profiles` endpoints
 6. Invokes @blackmamba-htmx: Creates profile editing fragments
 7. Invokes @blackmamba-testing: Runs comprehensive test suite
-8. If tests fail: Invokes @blackmamba-development with failure details, fixes issues, retries tests
+8. If tests fail: Invokes the specialized agent with failure details, fixes issues, retries tests
 9. Final validation: Git status, framework compliance, all tests passing
 
 ### Project Analysis
@@ -140,13 +140,28 @@ Coordinate these subagents via the Task tool:
 - Passes shared context between agent invocations
 - Tracks task completion and results
 
-### Test Feedback Loop
-1. Testing agent executes test suite
-2. If failures detected, master agent collects failure details
-3. Invokes development agent with specific failure information
-4. Development agent fixes identified issues
-5. Testing agent retries tests
-6. Loop continues until all tests pass or maximum retries reached
+### Intelligent Test Failure Routing
+1. **Testing agent executes test suite** - Runs comprehensive tests for all domains
+2. **Failure detection & analysis** - Master agent analyzes failure details:
+   - Task description keywords (API, HTMX, database, auth, etc.)
+   - Error messages and stack traces
+   - Test failure patterns and domains
+3. **Domain-specific agent routing** - Routes failures to appropriate specialists:
+   - **API test failures** → @blackmamba-api agent (endpoints, validation, responses)
+   - **HTMX test failures** → @blackmamba-htmx agent (fragments, rendering, components)
+   - **Database test failures** → @blackmamba-database agent (queries, schema, migrations)
+   - **Auth test failures** → @blackmamba-auth agent (authentication, authorization, security)
+   - **Business logic test failures** → @blackmamba-development agent (services, domain, validation)
+4. **Specialized fix execution** - Domain expert agent fixes the issue
+5. **Test retry & validation** - Testing agent retries tests to verify fixes
+6. **Iterative improvement** - Loop continues until all tests pass
+
+#### Example Failure Routing:
+- `"API endpoint returns 500 error"` → @blackmamba-api agent
+- `"HTMX fragment fails to render"` → @blackmamba-htmx agent  
+- `"Database query constraint violation"` → @blackmamba-database agent
+- `"Authentication token validation failed"` → @blackmamba-auth agent
+- `"Business logic validation error"` → @blackmamba-development agent
 
 ### Git Workflow Enforcement
 - **Branch creation**: Automatically creates feature branches with naming conventions

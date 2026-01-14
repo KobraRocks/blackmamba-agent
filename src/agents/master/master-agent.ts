@@ -440,17 +440,21 @@ export class MasterAgent extends BaseAgent {
           if (!taskResult.success) {
             // Handle task failure
             if (step.agentType === 'testing' && taskResult.errors?.some(e => e.includes('test'))) {
-              // Test failures trigger development agent fixes
+              // Test failures - detect which agent should fix them based on failure domain
               console.log(`Test failure detected: ${taskResult.message}`);
-              console.log('Initiating fix cycle with development agent...');
+              
+              // Determine which agent should fix this failure
+              const fixAgentType = this.detectFailureDomain(taskDescription, taskResult.details);
+              console.log(`Failure domain analysis: ${fixAgentType} agent should fix this`);
+              console.log(`Initiating fix cycle with ${fixAgentType} agent...`);
               
               const fixTask = `Fix issues identified in tests: ${taskDescription}`;
-              const fixResult = await this.executeAgentTask(fixTask, 'development', workflow);
+              const fixResult = await this.executeAgentTask(fixTask, fixAgentType, workflow);
               
               if (!fixResult.success) {
                 return {
                   success: false,
-                  message: `Failed to fix test issues: ${fixResult.message}`,
+                  message: `Failed to fix test issues with ${fixAgentType} agent: ${fixResult.message}`,
                   errors: fixResult.errors,
                   warnings: fixResult.warnings,
                 };
@@ -463,7 +467,7 @@ export class MasterAgent extends BaseAgent {
               if (!retryResult.success) {
                 return {
                   success: false,
-                  message: `Tests still failing after fixes: ${retryResult.message}`,
+                  message: `Tests still failing after ${fixAgentType} agent fixes: ${retryResult.message}`,
                   errors: retryResult.errors,
                   warnings: retryResult.warnings,
                 };
@@ -471,8 +475,9 @@ export class MasterAgent extends BaseAgent {
               
               // Mark original task as completed after successful retry
               const completedTask = this.markTaskComplete(task, { 
-                result: 'completed after fix cycle',
-                details: retryResult.details 
+                result: `completed after ${fixAgentType} agent fix cycle`,
+                details: retryResult.details,
+                fixAgent: fixAgentType,
               });
               const taskIndex = workflow.tasks.findIndex(t => t.id === task.id);
               workflow.tasks[taskIndex] = completedTask;
@@ -597,16 +602,79 @@ export class MasterAgent extends BaseAgent {
       // For now, simulate with appropriate responses based on agent type
       await this.delay(500); // Simulate agent execution time
       
-      // Simulate different outcomes based on agent type and task
+       // Simulate different outcomes based on agent type and task
       if (agentType === 'testing' && taskDescription.includes('test')) {
-        // Simulate test execution with occasional failures
-        const testPasses = Math.random() > 0.3; // 70% pass rate for simulation
+        // Simulate test execution with domain-specific failures
+        const testPasses = Math.random() > 0.5; // 50% pass rate for simulation to test failure handling
         
         if (!testPasses) {
-          return {
-            success: false,
-            message: 'Tests failed: 2 assertions failed, 1 error encountered',
-            details: {
+          // Generate domain-specific test failures based on task description
+          const lowerTask = taskDescription.toLowerCase();
+          
+          let failureDetails: any;
+          let failureMessage: string;
+          
+          if (lowerTask.includes('api') || lowerTask.includes('endpoint')) {
+            // API test failure
+            failureMessage = 'API tests failed: Endpoint validation errors';
+            failureDetails = {
+              passed: 8,
+              failed: 3,
+              errors: 1,
+              failures: [
+                'POST /api/v1/users should return 400 for invalid email',
+                'GET /api/v1/users/:id should return 404 for non-existent user',
+                'PUT /api/v1/users/:id should validate request body',
+              ],
+              stack: 'at ApiRouter.handleUserEndpoint (src/features/users/api/v1/users.api.ts:42)',
+              message: 'API endpoint validation failed: Missing required fields',
+            };
+          } else if (lowerTask.includes('htmx') || lowerTask.includes('fragment')) {
+            // HTMX test failure
+            failureMessage = 'HTMX fragment tests failed: Rendering errors';
+            failureDetails = {
+              passed: 12,
+              failed: 2,
+              errors: 0,
+              failures: [
+                'UserProfileFragment should render user avatar correctly',
+                'ShoppingCartFragment should update item count dynamically',
+              ],
+              stack: 'at FragmentRenderer.renderProfile (src/features/users/fragments/profile.fragment.ts:78)',
+              message: 'HTML rendering failed: Missing required template variables',
+            };
+          } else if (lowerTask.includes('database') || lowerTask.includes('prisma')) {
+            // Database test failure
+            failureMessage = 'Database tests failed: Query execution errors';
+            failureDetails = {
+              passed: 10,
+              failed: 2,
+              errors: 1,
+              failures: [
+                'UserRepository.findByEmail should handle null results',
+                'ProductRepository.getAll should implement pagination',
+              ],
+              stack: 'at PrismaClient.executeQuery (node_modules/@prisma/client/runtime/index.js:123)',
+              message: 'Database query failed: Unique constraint violation',
+            };
+          } else if (lowerTask.includes('auth') || lowerTask.includes('authentication')) {
+            // Auth test failure
+            failureMessage = 'Authentication tests failed: Security validation errors';
+            failureDetails = {
+              passed: 7,
+              failed: 2,
+              errors: 0,
+              failures: [
+                'LoginHandler should validate password strength',
+                'SessionMiddleware should expire tokens after timeout',
+              ],
+              stack: 'at PassportStrategy.authenticate (src/infrastructure/auth/passport/local.strategy.ts:56)',
+              message: 'Authentication failed: Invalid credentials or expired session',
+            };
+          } else {
+            // General/development test failure (default)
+            failureMessage = 'Tests failed: 2 assertions failed, 1 error encountered';
+            failureDetails = {
               passed: 15,
               failed: 2,
               errors: 1,
@@ -614,7 +682,15 @@ export class MasterAgent extends BaseAgent {
                 'UserService.createUser should validate email format',
                 'AuthMiddleware.authenticate should reject expired tokens',
               ],
-            },
+              stack: 'at UserService.validateUserData (src/core/services/user.service.ts:89)',
+              message: 'Business logic validation failed: Invalid user data',
+            };
+          }
+          
+          return {
+            success: false,
+            message: failureMessage,
+            details: failureDetails,
             errors: ['Test failures detected'],
             warnings: ['Consider adding more test cases for edge conditions'],
           };
@@ -679,6 +755,115 @@ export class MasterAgent extends BaseAgent {
     nextSteps.push('Consider running comprehensive test suite');
     
     return nextSteps;
+  }
+  
+  private detectFailureDomain(
+    taskDescription: string, 
+    failureDetails: any
+  ): WorkflowStep['agentType'] {
+    // Analyze task description and failure details to determine which agent should fix it
+    
+    const lowerTask = taskDescription.toLowerCase();
+    const failureMessage = failureDetails?.message?.toLowerCase() || '';
+    const failureStack = failureDetails?.stack?.toLowerCase() || '';
+    
+    // Check for API-related failures
+    if (
+      lowerTask.includes('api') ||
+      lowerTask.includes('endpoint') ||
+      lowerTask.includes('rest') ||
+      failureMessage.includes('api') ||
+      failureMessage.includes('endpoint') ||
+      failureMessage.includes('status code') ||
+      failureMessage.includes('response') ||
+      failureStack.includes('api') ||
+      failureStack.includes('router') ||
+      failureStack.includes('route')
+    ) {
+      return 'api';
+    }
+    
+    // Check for HTMX/UI-related failures
+    if (
+      lowerTask.includes('htmx') ||
+      lowerTask.includes('fragment') ||
+      lowerTask.includes('component') ||
+      lowerTask.includes('ui') ||
+      lowerTask.includes('render') ||
+      lowerTask.includes('html') ||
+      failureMessage.includes('htmx') ||
+      failureMessage.includes('fragment') ||
+      failureMessage.includes('component') ||
+      failureMessage.includes('render') ||
+      failureMessage.includes('html') ||
+      failureStack.includes('htmx') ||
+      failureStack.includes('fragment') ||
+      failureStack.includes('template')
+    ) {
+      return 'htmx';
+    }
+    
+    // Check for database-related failures
+    if (
+      lowerTask.includes('database') ||
+      lowerTask.includes('prisma') ||
+      lowerTask.includes('schema') ||
+      lowerTask.includes('migration') ||
+      lowerTask.includes('repository') ||
+      lowerTask.includes('query') ||
+      failureMessage.includes('database') ||
+      failureMessage.includes('prisma') ||
+      failureMessage.includes('schema') ||
+      failureMessage.includes('migration') ||
+      failureMessage.includes('query') ||
+      failureMessage.includes('sql') ||
+      failureStack.includes('prisma') ||
+      failureStack.includes('database') ||
+      failureStack.includes('repository')
+    ) {
+      return 'database';
+    }
+    
+    // Check for authentication-related failures
+    if (
+      lowerTask.includes('auth') ||
+      lowerTask.includes('authentication') ||
+      lowerTask.includes('authorization') ||
+      lowerTask.includes('login') ||
+      lowerTask.includes('session') ||
+      lowerTask.includes('rbac') ||
+      lowerTask.includes('permission') ||
+      failureMessage.includes('auth') ||
+      failureMessage.includes('authentication') ||
+      failureMessage.includes('authorization') ||
+      failureMessage.includes('unauthorized') ||
+      failureMessage.includes('forbidden') ||
+      failureStack.includes('auth') ||
+      failureStack.includes('passport') ||
+      failureStack.includes('session')
+    ) {
+      return 'auth';
+    }
+    
+    // Check for core business logic failures (development agent)
+    if (
+      lowerTask.includes('unit test') ||
+      lowerTask.includes('business logic') ||
+      lowerTask.includes('service') ||
+      lowerTask.includes('domain') ||
+      lowerTask.includes('core') ||
+      failureMessage.includes('business logic') ||
+      failureMessage.includes('service') ||
+      failureMessage.includes('domain') ||
+      failureMessage.includes('validation') ||
+      failureStack.includes('service') ||
+      failureStack.includes('domain')
+    ) {
+      return 'development';
+    }
+    
+    // Default to development agent for general test failures
+    return 'development';
   }
   
   private delay(ms: number): Promise<void> {
