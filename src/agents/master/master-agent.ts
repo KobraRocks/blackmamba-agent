@@ -5,7 +5,7 @@ import { GitWorkflowManager, BranchSpec } from '../shared/git-workflow';
 export interface WorkflowStep {
   step: number;
   description: string;
-  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git';
+  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer';
   tasks: string[];
   dependencies: number[];
 }
@@ -170,11 +170,24 @@ export class MasterAgent extends BaseAgent {
             `Create HTMX fragments for ${featureName}`,
             'Implement UI components',
             'Set up fragment routes',
+            'Coordinate with Web Designer for styling',
           ],
           dependencies: [baseStep + 1, baseStep + 2],
         },
         {
           step: baseStep + 6,
+          description: 'Implement CSS styling and design',
+          agentType: 'web-designer' as const,
+          tasks: [
+            `Create CSS components for ${featureName}`,
+            'Implement variable-based theme system',
+            'Ensure responsive and accessible design',
+            'Coordinate CSS variables with HTMX fragments',
+          ],
+          dependencies: [baseStep + 5], // Depends on HTMX structure
+        },
+        {
+          step: baseStep + 7,
           description: 'Implement API endpoints',
           agentType: 'api' as const,
           tasks: [
@@ -186,31 +199,33 @@ export class MasterAgent extends BaseAgent {
           dependencies: [baseStep + 2, baseStep + 3, baseStep + 4],
         },
         {
-          step: baseStep + 7,
+          step: baseStep + 8,
           description: 'Create comprehensive tests',
           agentType: 'testing' as const,
           tasks: [
             `Create unit tests for ${featureName} core logic`,
             'Create fragment tests for HTMX components',
+            'Create CSS styling tests',
             'Create API integration tests',
             'Create E2E tests for user flows',
           ],
-          dependencies: [baseStep + 2, baseStep + 5, baseStep + 6],
+          dependencies: [baseStep + 2, baseStep + 5, baseStep + 6, baseStep + 7],
         },
         {
-          step: baseStep + 8,
+          step: baseStep + 9,
           description: 'Verify framework compliance',
           agentType: 'analysis' as const,
           tasks: [
             'Verify all code follows BlackMamba patterns',
             'Check directory structure compliance',
             'Validate separation of concerns',
+            'Validate CSS follows BlackMamba philosophy',
             'Run automated tests',
           ],
-          dependencies: [baseStep + 1, baseStep + 2, baseStep + 3, baseStep + 4, baseStep + 5, baseStep + 6, baseStep + 7],
+          dependencies: [baseStep + 1, baseStep + 2, baseStep + 3, baseStep + 4, baseStep + 5, baseStep + 6, baseStep + 7, baseStep + 8],
         },
         {
-          step: baseStep + 9,
+          step: baseStep + 10,
           description: 'Validate and prepare for merge',
           agentType: 'git' as const,
           tasks: [
@@ -219,7 +234,7 @@ export class MasterAgent extends BaseAgent {
             'Update documentation',
             'Prepare merge request',
           ],
-          dependencies: [baseStep + 8],
+          dependencies: [baseStep + 9],
         },
       ],
       currentStep: 1,
@@ -581,6 +596,7 @@ export class MasterAgent extends BaseAgent {
         'api': 'blackmamba-api',
         'analysis': 'blackmamba-development', // Analysis uses development agent
         'git': 'blackmamba-development', // Git operations use development agent
+        'web-designer': 'blackmamba-web-designer',
       };
       
       const agentName = agentMap[agentType];

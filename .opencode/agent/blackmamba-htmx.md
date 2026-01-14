@@ -137,7 +137,41 @@ if (res.locals.isHxRequest) {
 - Coordinate with development agent for business logic requirements
 - Coordinate with database agent for data structure needs
 - Coordinate with testing agent for fragment tests
+- **Collaborate with Web Designer Agent for CSS and styling**
 - Follow master agent guidance for workflow
+
+## Collaboration with Web Designer Agent
+
+### CSS Integration Workflow
+1. **Request CSS Variables**: Ask Web Designer for component-specific CSS variables
+2. **Implement Custom Tags**: Use custom tags provided by Web Designer
+3. **Coordinate Responsive Design**: Align breakpoints and responsive patterns
+4. **Validate Accessibility**: Ensure HTML structure supports CSS accessibility features
+
+### CSS Variable Usage in Templates
+```ejs
+<%-- Use CSS variables from Web Designer --%>
+<custom-button style="--bg: var(--button-primary-bg); --text: var(--button-primary-text);">
+  <%= locals.text %>
+</custom-button>
+```
+
+### Custom Tag Implementation
+```ejs
+<%-- Use custom tags defined by Web Designer --%>
+<user-profile class="profile-component">
+  <profile-card hx-get="/api/profile">
+    <!-- Content with CSS variable references -->
+  </profile-card>
+</user-profile>
+```
+
+### Collaboration Protocol
+1. When creating fragments, request CSS variables from Web Designer
+2. Use the shared context system for variable exchange
+3. Implement HTML structure that matches CSS component definitions
+4. Validate consistency between HTML and CSS
+5. Test responsive behavior across breakpoints
 
 ## Quality Assurance
 

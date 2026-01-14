@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackMamba CSS Patterns Demo</title>
+    <link rel="stylesheet" href="blackmamba-css-patterns.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+            background: var(--bg-color, #f8f9fa);
+            margin: 0;
+            padding: var(--spacing-lg);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--card-bg, white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .demo-section h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .code-block {
+            background: var(--bg-muted);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            overflow-x: auto;
+            margin-top: var(--spacing-md);
+        }
+        
+        .principles-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .principle-card {
+            padding: var(--spacing-md);
+            background: var(--bg-muted);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .principle-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="demo-section">
+        <h1>BlackMamba CSS Patterns Demo</h1>
+        <p>Demonstrating BlackMamba's CSS design philosophy with practical examples.</p>
+        
+        <div class="principles-list">
+            <div class="principle-card">
+                <h3>Single CSS File</h3>
+                <p>All styles in one file with configurable variables in <code>:root{}</code></p>
+            </div>
+            <div class="principle-card">
+                <h3>CSS Components</h3>
+                <p>Component-based styling over class spamming (like Tailwind)</p>
+            </div>
+            <div class="principle-card">
+                <h3>Custom Tags</h3>
+                <p>Custom HTML tags over generic tags for better semantics</p>
+            </div>
+            <div class="principle-card">
+                <h3>Variable System</h3>
+                <p>Consistent styling using CSS custom properties</p>
+            </div>
+        </div>
+    </header>
+
+    <section class="demo-section">
+        <h2>Button Components</h2>
+        <p>Custom button component with variants and states:</p>
+        
+        <div class="component-grid">
+            <div>
+                <h3>Primary Button</h3>
+                <custom-button>Click Me</custom-button>
+                <div class="code-block">
+&lt;custom-button&gt;Click Me&lt;/custom-button&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>Disabled Button</h3>
+                <custom-button disabled>Disabled</custom-button>
+                <div class="code-block">
+&lt;custom-button disabled&gt;Disabled&lt;/custom-button&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>Button with HTMX</h3>
+                <custom-button 
+                    hx-get="/api/data" 
+                    hx-target="#result"
+                    hx-swap="innerHTML">
+                    Load Data
+                </custom-button>
+                <div class="code-block">
+&lt;custom-button 
+    hx-get="/api/data"
+    hx-target="#result"
+    hx-swap="innerHTML"&gt;
+    Load Data
+&lt;/custom-button&gt;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <h2>Card Components</h2>
+        
+        <div class="component-grid">
+            <div>
+                <h3>Data Card</h3>
+                <data-card>
+                    <h3>User Profile</h3>
+                    <p>Display user information in a card component with hover effects.</p>
+                    <custom-button>View Profile</custom-button>
+                </data-card>
+                <div class="code-block">
+&lt;data-card&gt;
+    &lt;h3&gt;User Profile&lt;/h3&gt;
+    &lt;p&gt;Display user information...&lt;/p&gt;
+    &lt;custom-button&gt;View Profile&lt;/custom-button&gt;
+&lt;/data-card&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>KPI Card (from example)</h3>
+                <kpi-card>
+                    <kpi-value>10%</kpi-value>
+                    <kpi-label>Backlog Resolution</kpi-label>
+                </kpi-card>
+                <div class="code-block">
+&lt;kpi-card&gt;
+    &lt;kpi-value&gt;10%&lt;/kpi-value&gt;
+    &lt;kpi-label&gt;Backlog Resolution&lt;/kpi-label&gt;
+&lt;/kpi-card&gt;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <h2>Form Components</h2>
+        
+        <div class="component-grid">
+            <div>
+                <h3>Text Input</h3>
+                <label for="username">Username:</label>
+                <custom-input 
+                    type="text" 
+                    id="username" 
+                    placeholder="Enter your username">
+                </custom-input>
+                <div class="code-block">
+&lt;custom-input 
+    type="text"
+    id="username"
+    placeholder="Enter your username"&gt;
+&lt;/custom-input&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>Invalid Input</h3>
+                <label for="email">Email (invalid):</label>
+                <custom-input 
+                    type="email" 
+                    id="email" 
+                    value="invalid-email"
+                    aria-invalid="true">
+                </custom-input>
+                <div class="code-block">
+&lt;custom-input 
+    type="email"
+    id="email"
+    value="invalid-email"
+    aria-invalid="true"&gt;
+&lt;/custom-input&gt;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <h2>Alert Components</h2>
+        
+        <div class="component-grid">
+            <div>
+                <h3>Info Alert</h3>
+                <custom-alert>
+                    <strong>Information:</strong> This is an informational message.
+                </custom-alert>
+                <div class="code-block">
+&lt;custom-alert&gt;
+    &lt;strong&gt;Information:&lt;/strong&gt; This is an informational message.
+&lt;/custom-alert&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>Success Alert</h3>
+                <custom-alert variant="success">
+                    <strong>Success!</strong> Your action was completed successfully.
+                </custom-alert>
+                <div class="code-block">
+&lt;custom-alert variant="success"&gt;
+    &lt;strong&gt;Success!&lt;/strong&gt; Your action was completed.
+&lt;/custom-alert&gt;
+                </div>
+            </div>
+            
+            <div>
+                <h3>Warning Alert</h3>
+                <custom-alert variant="warning">
+                    <strong>Warning:</strong> Please review your input.
+                </custom-alert>
+                <div class="code-block">
+&lt;custom-alert variant="warning"&gt;
+    &lt;strong&gt;Warning:&lt;/strong&gt; Please review your input.
+&lt;/custom-alert&gt;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <h2>Navigation & Grid</h2>
+        
+        <div>
+            <h3>Navigation Bar</h3>
+            <app-nav>
+                <span style="font-weight: bold; color: var(--primary-color);">App Logo</span>
+                <a href="#" style="text-decoration: none; color: var(--text-color);">Home</a>
+                <a href="#" style="text-decoration: none; color: var(--text-color);">Dashboard</a>
+                <a href="#" style="text-decoration: none; color: var(--text-color);">Settings</a>
+            </app-nav>
+            <div class="code-block">
+&lt;app-nav&gt;
+    &lt;span&gt;App Logo&lt;/span&gt;
+    &lt;a href="#"&gt;Home&lt;/a&gt;
+    &lt;a href="#"&gt;Dashboard&lt;/a&gt;
+    &lt;a href="#"&gt;Settings&lt;/a&gt;
+&lt;/app-nav&gt;
+            </div>
+        </div>
+        
+        <div style="margin-top: var(--spacing-xl);">
+            <h3>Grid System</h3>
+            <app-grid>
+                <data-card>Grid Item 1</data-card>
+                <data-card>Grid Item 2</data-card>
+                <data-card>Grid Item 3</data-card>
+                <data-card>Grid Item 4</data-card>
+                <data-card>Grid Item 5</data-card>
+                <data-card>Grid Item 6</data-card>
+            </app-grid>
+            <div class="code-block">
+&lt;app-grid&gt;
+    &lt;data-card&gt;Grid Item 1&lt;/data-card&gt;
+    &lt;data-card&gt;Grid Item 2&lt;/data-card&gt;
+    &lt;data-card&gt;Grid Item 3&lt;/data-card&gt;
+    &lt;data-card&gt;Grid Item 4&lt;/data-card&gt;
+    &lt;data-card&gt;Grid Item 5&lt;/data-card&gt;
+    &lt;data-card&gt;Grid Item 6&lt;/data-card&gt;
+&lt;/app-grid&gt;
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <h2>CSS Variable System</h2>
+        
+        <div class="component-grid">
+            <div>
+                <h3>Color Variables</h3>
+                <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                    <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: var(--radius-sm);"></div>
+                    <div style="width: 50px; height: 50px; background: var(--secondary-color); border-radius: var(--radius-sm);"></div>
+                    <div style="width: 50px; height: 50px; background: var(--success-color); border-radius: var(--radius-sm);"></div>
+                    <div style="width: 50px; height: 50px; background: var(--danger-color); border-radius: var(--radius-sm);"></div>
+                </div>
+                <div class="code-block">
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+}
+                </div>
+            </div>
+            
+            <div>
+                <h3>Spacing Variables</h3>
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+                    <div style="height: 20px; background: var(--primary-color); width: var(--spacing-xs);"></div>
+                    <div style="height: 20px; background: var(--primary-color); width: var(--spacing-sm);"></div>
+                    <div style="height: 20px; background: var(--primary-color); width: var(--spacing-md);"></div>
+                    <div style="height: 20px; background: var(--primary-color); width: var(--spacing-lg);"></div>
+                </div>
+                <div class="code-block">
+:root {
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+}
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: var(--spacing-lg);">
+            <h3>Light/Dark Mode Support</h3>
+            <p>This demo automatically switches between light and dark mode based on your system preferences.</p>
+            <div class="code-block">
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #0056b3;
+        --text-color: #f0f0f0;
+        --bg-color: #1a1a1a;
+    }
+}
+            </div>
+        </div>
+    </section>
+
+    <footer class="demo-section">
+        <h2>Key Benefits</h2>
+        <ul>
+            <li><strong>Consistency:</strong> All components use the same variable system</li>
+            <li><strong>Maintainability:</strong> Change themes by updating variables in one place</li>
+            <li><strong>Performance:</strong> Single CSS file reduces HTTP requests</li>
+            <li><strong>Accessibility:</strong> Built-in focus states and contrast ratios</li>
+            <li><strong>Responsive:</strong> Mobile-first design with CSS variable adjustments</li>
+            <li><strong>Collaboration:</strong> Clear separation between HTML (HTMX) and CSS (Web Designer)</li>
+        </ul>
+        
+        <p style="margin-top: var(--spacing-lg); border-top: 1px solid var(--border-color); padding-top: var(--spacing-md);">
+            This demo shows how BlackMamba's Web Designer Agent would create CSS components that 
+            seamlessly integrate with HTMX fragments created by the HTMX Agent.
+        </p>
+    </footer>
+
+    <script>
+        // Demo interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to demo buttons
+            document.querySelectorAll('custom-button').forEach(button => {
+                if (!button.hasAttribute('disabled')) {
+                    button.addEventListener('click', function(e) {
+                        if (!this.hasAttribute('hx-get')) {
+                            e.preventDefault();
+                            alert('Button clicked! In a real app, this would trigger HTMX or other actions.');
+                        }
+                    });
+                }
+            });
+            
+            // Show current theme
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            console.log(`Current theme: ${isDarkMode ? 'Dark' : 'Light'} mode`);
+            
+            // Listen for theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                console.log(`Theme changed to: ${e.matches ? 'Dark' : 'Light'} mode`);
+            });
+        });
+    </script>
+</body>
+</html>

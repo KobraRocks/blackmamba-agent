@@ -16,7 +16,7 @@ export interface AgentContext {
 export interface AgentTask {
   id: string;
   description: string;
-  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git';
+  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer';
   priority: 'high' | 'medium' | 'low';
   dependencies?: string[];
   status: 'pending' | 'in_progress' | 'completed' | 'failed';

@@ -1,0 +1,536 @@
+/* BlackMamba CSS Patterns - Example Components */
+/* Demonstrates BlackMamba's CSS design philosophy */
+
+/* ============================================
+   GLOBAL VARIABLE SYSTEM
+   ============================================ */
+
+:root {
+  /* Color System - Light mode defaults */
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  
+  --text-color: #333;
+  --text-muted: #6c757d;
+  --bg-color: #fff;
+  --bg-muted: #f8f9fa;
+  
+  --border-color: #dee2e6;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Spacing System */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  
+  --line-height-sm: 1.25;
+  --line-height-md: 1.5;
+  --line-height-lg: 1.75;
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-round: 50%;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px var(--shadow-color);
+  --shadow-md: 0 4px 6px var(--shadow-color);
+  --shadow-lg: 0 10px 15px var(--shadow-color);
+  --shadow-xl: 0 20px 25px var(--shadow-color);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  
+  /* Z-index layers */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  
+  /* Component-specific variables */
+  --button-primary-bg: var(--primary-color);
+  --button-primary-text: white;
+  --button-primary-hover: #0056b3;
+  
+  --card-bg: var(--bg-color);
+  --card-border: var(--border-color);
+  --card-shadow: var(--shadow-md);
+  
+  --input-bg: var(--bg-color);
+  --input-border: var(--border-color);
+  --input-focus-border: var(--primary-color);
+  --input-focus-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #0056b3;
+    --secondary-color: #495057;
+    --success-color: #1e7e34;
+    --danger-color: #bd2130;
+    --warning-color: #d39e00;
+    --info-color: #138496;
+    
+    --text-color: #f0f0f0;
+    --text-muted: #adb5bd;
+    --bg-color: #1a1a1a;
+    --bg-muted: #2a2a2a;
+    
+    --border-color: #444;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    
+    --button-primary-bg: #0056b3;
+    --button-primary-hover: #004085;
+    
+    --card-bg: #2a2a2a;
+    --card-border: #444;
+    
+    --input-bg: #2a2a2a;
+    --input-border: #444;
+    --input-focus-border: #0056b3;
+    --input-focus-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25);
+  }
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-xxl: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-md: 0.5rem;
+    --spacing-lg: 0.75rem;
+    --spacing-xl: 1rem;
+    
+    --font-size-md: 0.9375rem;
+    --font-size-lg: 1rem;
+    --font-size-xl: 1.125rem;
+  }
+}
+
+/* ============================================
+   EXAMPLE COMPONENTS
+   ============================================ */
+
+/* Button Component */
+custom-button {
+  /* Internal variables */
+  --bg: var(--button-primary-bg, #007bff);
+  --text: var(--button-primary-text, white);
+  --padding: var(--spacing-md);
+  --radius: var(--radius-md);
+  
+  /* Component styling */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text);
+  padding: var(--padding);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  line-height: var(--line-height-md);
+  cursor: pointer;
+  transition: background-color var(--transition-normal),
+              transform var(--transition-fast),
+              box-shadow var(--transition-normal);
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+  
+  /* States */
+  &:hover {
+    background: var(--button-primary-hover, #0056b3);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+  
+  /* Disabled state */
+  &[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Card Component */
+data-card {
+  /* Internal variables */
+  --bg: var(--card-bg);
+  --border: var(--card-border);
+  --padding: var(--spacing-lg);
+  --radius: var(--radius-md);
+  --shadow: var(--card-shadow);
+  
+  /* Component styling */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--padding);
+  box-shadow: var(--shadow);
+  transition: box-shadow var(--transition-normal),
+              transform var(--transition-normal);
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-sm);
+  }
+  
+  /* Hover effect */
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+/* KPI Card Component (from your example) */
+kpi-card {
+  /* Internal variables */
+  --value-color: var(--kpi-value-color, var(--primary-color));
+  --label-color: var(--kpi-label-color, var(--text-muted));
+  --value-size: var(--kpi-value-size, var(--font-size-xxl));
+  --label-size: var(--kpi-label-size, var(--font-size-md));
+  --padding: var(--spacing-xl);
+  --radius: var(--radius-lg);
+  
+  /* Component styling */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: all var(--transition-normal);
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
+  
+  /* Child elements */
+  & > * {
+    width: 100%;
+    text-align: center;
+  }
+  
+  kpi-value {
+    color: var(--value-color);
+    font-size: var(--value-size);
+    font-weight: 700;
+    line-height: var(--line-height-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  kpi-label {
+    color: var(--label-color);
+    font-size: var(--label-size);
+    font-weight: 500;
+    line-height: var(--line-height-md);
+    opacity: 0.9;
+  }
+  
+  /* Hover effect */
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+/* Input Component */
+custom-input {
+  /* Internal variables */
+  --bg: var(--input-bg);
+  --border: var(--input-border);
+  --focus-border: var(--input-focus-border);
+  --focus-shadow: var(--input-focus-shadow);
+  --padding: var(--spacing-md);
+  --radius: var(--radius-md);
+  
+  /* Component styling */
+  display: block;
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--padding);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-md);
+  color: var(--text-color);
+  transition: border-color var(--transition-normal),
+              box-shadow var(--transition-normal);
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+  
+  /* States */
+  &:focus {
+    border-color: var(--focus-border);
+    box-shadow: var(--focus-shadow);
+    outline: none;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-muted);
+  }
+  
+  /* Error state */
+  &[aria-invalid="true"] {
+    border-color: var(--danger-color);
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+    }
+  }
+}
+
+/* Alert Component */
+custom-alert {
+  /* Internal variables */
+  --bg: var(--info-color);
+  --text: white;
+  --padding: var(--spacing-md);
+  --radius: var(--radius-md);
+  --border: transparent;
+  
+  /* Component styling */
+  display: flex;
+  align-items: flex-start;
+  background: var(--bg);
+  color: var(--text);
+  padding: var(--padding);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
+  
+  /* Variants */
+  &[variant="success"] {
+    --bg: var(--success-color);
+  }
+  
+  &[variant="warning"] {
+    --bg: var(--warning-color);
+    --text: var(--text-color);
+  }
+  
+  &[variant="danger"] {
+    --bg: var(--danger-color);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-sm);
+    flex-direction: column;
+  }
+  
+  /* Content */
+  & > *:not(:last-child) {
+    margin-right: var(--spacing-sm);
+    
+    @media (max-width: 768px) {
+      margin-right: 0;
+      margin-bottom: var(--spacing-xs);
+    }
+  }
+}
+
+/* Navigation Component */
+app-nav {
+  /* Internal variables */
+  --bg: var(--bg-color);
+  --border: var(--border-color);
+  --padding: var(--spacing-md);
+  --shadow: var(--shadow-sm);
+  
+  /* Component styling */
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: var(--padding);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    padding: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+  
+  /* Child elements */
+  & > *:not(:last-child) {
+    margin-right: var(--spacing-lg);
+    
+    @media (max-width: 768px) {
+      margin-right: var(--spacing-md);
+    }
+  }
+}
+
+/* Grid System */
+app-grid {
+  /* Internal variables */
+  --gap: var(--spacing-lg);
+  --columns: 3;
+  
+  /* Component styling */
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  gap: var(--gap);
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    --columns: 2;
+  }
+  
+  @media (max-width: 768px) {
+    --columns: 1;
+    --gap: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES (Minimal, prefer components)
+   ============================================ */
+
+/* Only add utilities when absolutely necessary */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+/* Focus styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-color: #004085;
+    --border-color: #000;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  custom-button,
+  data-card,
+  kpi-card {
+    border: 2px solid var(--border-color);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  :root {
+    --bg-color: white;
+    --text-color: black;
+    --shadow-color: transparent;
+  }
+  
+  custom-button,
+  data-card,
+  kpi-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  /* Hide interactive elements in print */
+  custom-button[type="button"] {
+    display: none;
+  }
+}
