@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><%= title %></h1>
+        <p>Simple test project for BlackMamba agent testing</p>
+    </div>
+    
+    <div class="content">
+        <h2>Project Status</h2>
+        <p>This is a minimal test project for agent testing framework.</p>
+        
+        <h3>Available Endpoints:</h3>
+        <ul>
+            <li><code>GET /</code> - This page</li>
+            <li><code>GET /health</code> - Health check endpoint</li>
+        </ul>
+        
+        <h3>Testing Instructions:</h3>
+        <p>Run the agent testing framework to validate agent behavior with this project.</p>
+    </div>
+</body>
+</html>

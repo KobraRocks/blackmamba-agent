@@ -5,7 +5,7 @@ import { GitWorkflowManager, BranchSpec } from '../shared/git-workflow';
 export interface WorkflowStep {
   step: number;
   description: string;
-  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer';
+  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer' | 'performance';
   tasks: string[];
   dependencies: number[];
 }
@@ -597,6 +597,7 @@ export class MasterAgent extends BaseAgent {
         'analysis': 'blackmamba-development', // Analysis uses development agent
         'git': 'blackmamba-development', // Git operations use development agent
         'web-designer': 'blackmamba-web-designer',
+        'performance': 'blackmamba-performance',
       };
       
       const agentName = agentMap[agentType];
@@ -876,6 +877,26 @@ export class MasterAgent extends BaseAgent {
       failureStack.includes('domain')
     ) {
       return 'development';
+    }
+    
+    // Check for performance-related failures
+    if (
+      lowerTask.includes('performance') ||
+      lowerTask.includes('slow') ||
+      lowerTask.includes('optimize') ||
+      lowerTask.includes('bottleneck') ||
+      lowerTask.includes('response time') ||
+      lowerTask.includes('memory') ||
+      lowerTask.includes('cpu') ||
+      failureMessage.includes('performance') ||
+      failureMessage.includes('slow') ||
+      failureMessage.includes('timeout') ||
+      failureMessage.includes('memory') ||
+      failureMessage.includes('cpu') ||
+      failureStack.includes('performance') ||
+      failureStack.includes('profiling')
+    ) {
+      return 'performance';
     }
     
     // Default to development agent for general test failures
