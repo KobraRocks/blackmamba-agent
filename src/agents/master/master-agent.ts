@@ -5,7 +5,7 @@ import { GitWorkflowManager, BranchSpec } from '../shared/git-workflow';
 export interface WorkflowStep {
   step: number;
   description: string;
-  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer' | 'performance' | 'security';
+  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer' | 'performance' | 'security' | 'documentation';
   tasks: string[];
   dependencies: number[];
 }
@@ -599,6 +599,7 @@ export class MasterAgent extends BaseAgent {
         'web-designer': 'blackmamba-web-designer',
         'performance': 'blackmamba-performance',
         'security': 'blackmamba-security',
+        'documentation': 'blackmamba-documentation',
       };
       
       const agentName = agentMap[agentType];
@@ -920,6 +921,22 @@ export class MasterAgent extends BaseAgent {
       failureStack.includes('auth')
     ) {
       return 'security';
+    }
+    
+    // Check for documentation-related failures
+    if (
+      lowerTask.includes('documentation') ||
+      lowerTask.includes('readme') ||
+      lowerTask.includes('api docs') ||
+      lowerTask.includes('swagger') ||
+      lowerTask.includes('openapi') ||
+      lowerTask.includes('jsdoc') ||
+      failureMessage.includes('documentation') ||
+      failureMessage.includes('docs') ||
+      failureMessage.includes('readme') ||
+      failureStack.includes('documentation')
+    ) {
+      return 'documentation';
     }
     
     // Default to development agent for general test failures

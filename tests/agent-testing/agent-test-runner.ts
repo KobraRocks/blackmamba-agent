@@ -33,7 +33,7 @@ interface TestDefinition {
   id: string;
   name: string;
   description: string;
-  agentType: 'master' | 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'web-designer' | 'performance' | 'security';
+  agentType: 'master' | 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'web-designer' | 'performance' | 'security' | 'documentation';
   taskDescription: string;
   expectedOutcome: string;
   validationCriteria: string[];
@@ -236,6 +236,8 @@ class AgentTestRunner {
         return test.taskDescription.includes('optimize') || test.taskDescription.includes('performance');
       case 'security':
         return test.taskDescription.includes('security') || test.taskDescription.includes('authentication');
+      case 'documentation':
+        return test.taskDescription.includes('documentation') || test.taskDescription.includes('readme');
       default:
         return true;
     }
@@ -517,6 +519,19 @@ const TEST_SUITES: TestSuite[] = [
           'Scans for vulnerabilities',
           'Identifies security issues',
           'Implements security fixes',
+        ],
+      },
+      {
+        id: 'c6',
+        name: 'Documentation Agent - API Docs',
+        description: 'Test documentation agent API documentation generation',
+        agentType: 'documentation',
+        taskDescription: 'Generate OpenAPI documentation for user management API',
+        expectedOutcome: 'Documentation agent creates comprehensive API documentation',
+        validationCriteria: [
+          'Generates OpenAPI/Swagger docs',
+          'Documents API endpoints',
+          'Creates request/response examples',
         ],
       },
     ],
