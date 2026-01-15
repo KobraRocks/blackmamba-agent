@@ -5,7 +5,7 @@ import { GitWorkflowManager, BranchSpec } from '../shared/git-workflow';
 export interface WorkflowStep {
   step: number;
   description: string;
-  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer' | 'performance';
+  agentType: 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'analysis' | 'git' | 'web-designer' | 'performance' | 'security';
   tasks: string[];
   dependencies: number[];
 }
@@ -598,6 +598,7 @@ export class MasterAgent extends BaseAgent {
         'git': 'blackmamba-development', // Git operations use development agent
         'web-designer': 'blackmamba-web-designer',
         'performance': 'blackmamba-performance',
+        'security': 'blackmamba-security',
       };
       
       const agentName = agentMap[agentType];
@@ -897,6 +898,28 @@ export class MasterAgent extends BaseAgent {
       failureStack.includes('profiling')
     ) {
       return 'performance';
+    }
+    
+    // Check for security-related failures
+    if (
+      lowerTask.includes('security') ||
+      lowerTask.includes('vulnerability') ||
+      lowerTask.includes('authentication') ||
+      lowerTask.includes('authorization') ||
+      lowerTask.includes('permission') ||
+      lowerTask.includes('encryption') ||
+      lowerTask.includes('injection') ||
+      lowerTask.includes('xss') ||
+      lowerTask.includes('csrf') ||
+      failureMessage.includes('security') ||
+      failureMessage.includes('vulnerability') ||
+      failureMessage.includes('unauthorized') ||
+      failureMessage.includes('forbidden') ||
+      failureMessage.includes('authentication') ||
+      failureStack.includes('security') ||
+      failureStack.includes('auth')
+    ) {
+      return 'security';
     }
     
     // Default to development agent for general test failures

@@ -33,7 +33,7 @@ interface TestDefinition {
   id: string;
   name: string;
   description: string;
-  agentType: 'master' | 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'web-designer' | 'performance';
+  agentType: 'master' | 'development' | 'htmx' | 'database' | 'testing' | 'auth' | 'api' | 'web-designer' | 'performance' | 'security';
   taskDescription: string;
   expectedOutcome: string;
   validationCriteria: string[];
@@ -234,6 +234,8 @@ class AgentTestRunner {
         return test.taskDescription.includes('css') || test.taskDescription.includes('design');
       case 'performance':
         return test.taskDescription.includes('optimize') || test.taskDescription.includes('performance');
+      case 'security':
+        return test.taskDescription.includes('security') || test.taskDescription.includes('authentication');
       default:
         return true;
     }
@@ -502,6 +504,19 @@ const TEST_SUITES: TestSuite[] = [
           'Analyzes query performance',
           'Identifies optimization opportunities',
           'Implements performance improvements',
+        ],
+      },
+      {
+        id: 'c5',
+        name: 'Security Agent - Vulnerability Scan',
+        description: 'Test security agent vulnerability detection',
+        agentType: 'security',
+        taskDescription: 'Scan codebase for security vulnerabilities and implement fixes',
+        expectedOutcome: 'Security agent identifies and fixes security issues',
+        validationCriteria: [
+          'Scans for vulnerabilities',
+          'Identifies security issues',
+          'Implements security fixes',
         ],
       },
     ],
