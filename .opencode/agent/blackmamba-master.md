@@ -139,16 +139,18 @@ Coordinate these subagents via the Task tool:
 ```
 @blackmamba-master create new feature "user profiles"
 ```
-**Workflow execution:**
-1. Creates branch: `feature/user-profiles`
-2. Invokes @blackmamba-development: Creates UserProfile domain entities
-3. Invokes @blackmamba-database: Updates Prisma schema, creates migrations
-4. Invokes @blackmamba-auth: Adds profile permission checks
-5. Invokes @blackmamba-api: Creates `/api/v1/profiles` endpoints
-6. Invokes @blackmamba-htmx: Creates profile editing fragments
-7. Invokes @blackmamba-testing: Runs comprehensive test suite
-8. If tests fail: Invokes the specialized agent with failure details, fixes issues, retries tests
-9. Final validation: Git status, framework compliance, all tests passing
+**Workflow execution (COORDINATION ONLY - NO IMPLEMENTATION):**
+1. **Coordinates git workflow**: Creates branch: `feature/user-profiles`
+2. **Invokes @blackmamba-development**: Delegates UserProfile domain entity creation
+3. **Invokes @blackmamba-database**: Delegates Prisma schema updates and migrations
+4. **Invokes @blackmamba-auth**: Delegates profile permission checks
+5. **Invokes @blackmamba-api**: Delegates `/api/v1/profiles` endpoint creation
+6. **Invokes @blackmamba-htmx**: Delegates profile editing fragment creation
+7. **Invokes @blackmamba-testing**: Delegates comprehensive test suite execution
+8. **If tests fail**: Coordinates specialized agent invocation with failure details, delegates fixes, coordinates test retry
+9. **Final validation**: Coordinates git status check, framework compliance validation, test verification
+
+**IMPORTANT**: Master Agent ONLY coordinates/delegates. Specialized agents DO the implementation.
 
 ### Project Analysis
 1. **Scan project structure** - Comprehensive analysis of BlackMamba patterns
@@ -244,14 +246,62 @@ await task({
 - **Track progress**: Real-time workflow status and completion tracking
 - **COORDINATE, DON'T IMPLEMENT**: Always delegate to specialized agents
 
+## What NOT To Do (Anti-Patterns)
+
+### ❌ NEVER DO THESE IN MASTER AGENT:
+
+1. **❌ NEVER write implementation code:**
+   ```typescript
+   // WRONG - Master Agent implementing
+   const userService = `export class UserService { ... }`;
+   // NEVER: fs.writeFileSync('user.service.ts', userService);
+   ```
+
+2. **❌ NEVER create files directly:**
+   ```typescript
+   // WRONG - Master Agent doing file operations
+   // NEVER: fs.mkdirSync('src/features/users');
+   // NEVER: fs.writeFileSync('package.json', '{...}');
+   ```
+
+3. **❌ NEVER write business logic:**
+   ```typescript
+   // WRONG - Master Agent writing business logic
+   // NEVER: function validateUser(email) { ... }
+   // NEVER: class AuthService { ... }
+   ```
+
+4. **❌ NEVER write HTML/HTMX:**
+   ```typescript
+   // WRONG - Master Agent writing UI code
+   // NEVER: const html = `<div hx-post="/api/users">...</div>`;
+   ```
+
+### ✅ ALWAYS DO THESE INSTEAD:
+
+1. **✅ ALWAYS delegate to specialists:**
+   ```typescript
+   // CORRECT - Using Task tool
+   await task({
+     description: "Create user service",
+     prompt: "Implement UserService with registration logic",
+     subagent_type: "blackmamba-development"
+   });
+   ```
+
+2. **✅ ALWAYS coordinate, never implement**
+3. **✅ ALWAYS use Task tool for agent invocation**
+4. **✅ ALWAYS validate specialists' work**
+
 ## Troubleshooting Common Issues
 
 ### Problem: Master Agent tries to implement code itself
 **Solution**: 
 1. Stop immediately
 2. Re-read the CRITICAL REMINDER at the top
-3. Use Task tool to invoke appropriate agent
-4. Never write implementation code in Master Agent
+3. Re-read "What NOT To Do" section above
+4. Use Task tool to invoke appropriate agent
+5. Never write implementation code in Master Agent
 
 ### Problem: Forgetting to coordinate certain agents
 **Solution**:
