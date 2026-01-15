@@ -79,10 +79,18 @@ features/{feature}/
 6. Export feature module interface
 
 ### Working with Other Agents
-- Coordinate with database agent for entity/repository needs
-- Coordinate with HTMX agent for fragment requirements
-- Coordinate with testing agent for test coverage
-- Follow master agent guidance for workflow
+**ALWAYS WORK UNDER MASTER AGENT COORDINATION**
+
+- **Master Agent directs workflow**: Wait for Master Agent to coordinate tasks
+- **Coordinate with database agent** for entity/repository needs (when directed by Master Agent)
+- **Coordinate with HTMX agent** for fragment requirements (when directed by Master Agent)
+- **Coordinate with testing agent** for test coverage (when directed by Master Agent)
+- **Coordinate with security agent** for vulnerability scanning (when directed by Master Agent)
+- **Coordinate with documentation agent** for API/docs (when directed by Master Agent)
+- **Coordinate with performance agent** for optimization (when directed by Master Agent)
+- **Follow master agent guidance** for all workflow coordination
+
+**IMPORTANT**: You are a specialized agent. Master Agent determines when and how you work with other agents.
 
 ## Implementation Templates
 
